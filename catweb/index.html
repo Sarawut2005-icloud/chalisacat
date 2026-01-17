@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meow Heaven Premium Shop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* ================= VARIABLES & THEME ================= */
+        :root {
+            /* Light Mode Colors */
+            --primary: #ff6b6b;
+            --primary-light: #ff9e9e;
+            --secondary: #4ecdc4;
+            --bg-body: #fff9f9;
+            --bg-glass: rgba(255, 255, 255, 0.85);
+            --text-main: #2d3436;
+            --text-light: #636e72;
+            --card-shadow: 0 15px 35px rgba(255, 107, 107, 0.15);
+            --gradient: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);
+            --blob-color: #ffeaa7;
+        }
+
+        [data-theme="dark"] {
+            /* Dark Mode Colors */
+            --primary: #ff7675;
+            --primary-light: #ff7675;
+            --secondary: #81ecec;
+            --bg-body: #1e272e;
+            --bg-glass: rgba(45, 52, 54, 0.85);
+            --text-main: #dfe6e9;
+            --text-light: #b2bec3;
+            --card-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            --gradient: linear-gradient(135deg, #d63031 0%, #e17055 100%);
+            --blob-color: #636e72;
+        }
+
+        /* ================= RESET & BASE ================= */
+        * { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.4s ease, color 0.3s ease, border-color 0.3s ease; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ================= UTILITIES & ANIMATIONS ================= */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* ================= NAVBAR ================= */
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+        }
+        .nav-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.8rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+        .logo i { animation: float 3s infinite ease-in-out; }
+        
+        .nav-links { display: flex; gap: 30px; list-style: none; }
+        .nav-links a { text-decoration: none; color: var(--text-main); font-weight: 500; position: relative; }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 3px;
+            background: var(--primary); transition: 0.3s; border-radius: 2px;
+        }
+        .nav-links a:hover::after { width: 100%; }
+
+        /* Toggle Switch */
+        .theme-switch { position: relative; width: 60px; height: 30px; }
+        .theme-switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc; transition: .4s; border-radius: 34px;
+            display: flex; align-items: center; justify-content: space-between; padding: 0 7px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 22px; width: 22px; left: 4px; bottom: 4px;
+            background-color: white; transition: .4s; border-radius: 50%; z-index: 2;
+        }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(30px); }
+        .slider i { color: white; font-size: 12px; z-index: 1; }
+
+        /* ================= HERO SECTION ================= */
+        .hero {
+            min-height: 100vh;
+            display: flex; align-items: center;
+            position: relative; overflow: hidden;
+            padding-top: 80px;
+        }
+        .hero::before {
+            content: ''; position: absolute; top: -20%; right: -10%; width: 600px; height: 600px;
+            background: var(--blob-color); border-radius: 50%; filter: blur(80px); opacity: 0.5; z-index: -1;
+        }
+        .hero-text h1 { font-size: 4rem; line-height: 1.1; margin-bottom: 20px; }
+        .hero-text h1 span { color: var(--primary); }
+        .hero-text p { font-size: 1.2rem; color: var(--text-light); margin-bottom: 30px; max-width: 500px; }
+        .btn {
+            padding: 12px 35px; background: var(--gradient); color: white; border: none;
+            border-radius: 50px; font-size: 1.1rem; font-weight: 600; cursor: pointer;
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.4); text-decoration: none; display: inline-block;
+            transition: transform 0.3s;
+        }
+        .btn:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(255, 107, 107, 0.6); }
+
+        .hero-img { flex: 1; display: flex; justify-content: center; position: relative; }
+        .hero-img img {
+            width: 80%; max-width: 500px; border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            box-shadow: var(--card-shadow); animation: float 6s ease-in-out infinite;
+        }
+
+        /* ================= BREEDS SECTION ================= */
+        .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 50px; color: var(--primary); }
+        .breed-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px;
+            padding-bottom: 50px;
+        }
+        .breed-card {
+            background: var(--bg-glass); border-radius: 20px; overflow: hidden;
+            box-shadow: var(--card-shadow); text-align: center; padding-bottom: 20px;
+            transform: translateY(0); transition: 0.4s;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .breed-card:hover { transform: translateY(-15px); }
+        .breed-img { height: 220px; width: 100%; object-fit: cover; }
+        .breed-info { padding: 20px; }
+        .breed-info h3 { margin-bottom: 10px; color: var(--text-main); }
+        .breed-info p { color: var(--text-light); font-size: 0.9rem; }
+
+        /* ================= TABS SECTION (Care & Food) ================= */
+        .tabs-container {
+            background: var(--bg-glass); border-radius: 25px; padding: 40px;
+            box-shadow: var(--card-shadow); margin-bottom: 80px;
+        }
+        .tabs-header { display: flex; justify-content: center; gap: 20px; margin-bottom: 30px; flex-wrap: wrap; }
+        .tab-btn {
+            background: transparent; border: 2px solid var(--primary); color: var(--primary);
+            padding: 10px 30px; border-radius: 30px; font-size: 1.1rem; cursor: pointer;
+            font-weight: 600; font-family: 'Kanit';
+        }
+        .tab-btn.active, .tab-btn:hover { background: var(--primary); color: white; }
+        
+        .tab-content { display: none; animation: fadeIn 0.5s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+        .content-list li { margin-bottom: 15px; display: flex; align-items: start; gap: 10px; color: var(--text-light); }
+        .content-list i { color: var(--secondary); margin-top: 5px; }
+
+        /* ================= DISEASES SECTION ================= */
+        .disease-section { background: var(--gradient); padding: 80px 0; color: white; border-radius: 30px; margin-bottom: 80px; }
+        .disease-section .section-title { color: white; }
+        .disease-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .disease-card {
+            background: rgba(255,255,255,0.15); backdrop-filter: blur(5px);
+            padding: 25px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.2);
+        }
+        .disease-card h4 { font-size: 1.2rem; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        .disease-card p { font-size: 0.9rem; opacity: 0.9; font-weight: 300; }
+
+        /* ================= SERVICES ================= */
+        .services-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; }
+        .service-item {
+            background: var(--bg-glass); padding: 30px; border-radius: 20px;
+            box-shadow: var(--card-shadow); width: 300px; text-align: center;
+        }
+        .service-item i { font-size: 3rem; color: var(--primary); margin-bottom: 20px; }
+        .service-item h3 { margin-bottom: 10px; }
+        .service-item p { color: var(--text-light); font-size: 0.9rem; }
+
+        /* ================= FOOTER ================= */
+        footer { text-align: center; padding: 40px; color: var(--text-light); margin-top: 50px; border-top: 1px solid rgba(0,0,0,0.1); }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .hero { flex-direction: column-reverse; text-align: center; padding-top: 100px; }
+            .hero-text h1 { font-size: 2.8rem; }
+            .nav-links { display: none; } /* Hide menu on mobile for simplicity */
+            .content-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="container nav-content">
+            <div class="logo">
+                <i class="fa-solid fa-cat"></i> Meow Heaven
+            </div>
+            <ul class="nav-links">
+                <li><a href="#breeds">สายพันธุ์</a></li>
+                <li><a href="#guide">การดูแล</a></li>
+                <li><a href="#health">สุขภาพ</a></li>
+                <li><a href="#services">บริการ</a></li>
+            </ul>
+            <label class="theme-switch">
+                <input type="checkbox" id="themeToggle">
+                <span class="slider round">
+                    <i class="fas fa-sun"></i>
+                    <i class="fas fa-moon"></i>
+                </span>
+            </label>
+        </div>
+    </nav>
+
+    <header class="hero container">
+        <div class="hero-text reveal">
+            <h1>ตามหา <span>แมวคู่ใจ</span><br>ในสไตล์ที่เป็นคุณ</h1>
+            <p>แหล่งรวมลูกแมวสายพันธุ์แท้และพันธุ์ผสม คัดสรรคุณภาพจากฟาร์มมาตรฐาน พร้อมดูแลคุณตลอดเส้นทางการเลี้ยงดู [cite: 70]</p>
+            <a href="#breeds" class="btn">เลือกน้องแมวเลย <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="hero-img reveal">
+            <img src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Cute Cat">
+        </div>
+    </header>
+
+    <section id="breeds" class="container reveal">
+        <h2 class="section-title">สายพันธุ์ยอดนิยม</h2>
+        <div class="breed-grid">
+            <div class="breed-card">
+                <img src="https://images.unsplash.com/photo-1513245543132-31f507417b26?auto=format&fit=crop&w=500&q=60" class="breed-img" alt="Persian">
+                <div class="breed-info">
+                    <h3>แมวเปอร์เซีย</h3>
+                    <p>ขนฟู สง่างาม น่ารักเหมือนตุ๊กตา [cite: 4]</p>
+                </div>
+            </div>
+            <div class="breed-card">
+                <img src="https://images.unsplash.com/photo-1592194996308-7b43878e84a6?auto=format&fit=crop&w=500&q=60" class="breed-img" alt="Bengal">
+                <div class="breed-info">
+                    <h3>แมวเบงกอล</h3>
+                    <p>ลายเสือสวยงาม ปราดเปรียว ขี้เล่น [cite: 3]</p>
+                </div>
+            </div>
+            <div class="breed-card">
+                <img src="https://images.unsplash.com/photo-1511275539165-cc46b1ee89bf?auto=format&fit=crop&w=500&q=60" class="breed-img" alt="Maine Coon">
+                <div class="breed-info">
+                    <h3>แมวเมนคูน</h3>
+                    <p>พี่ใหญ่ใจดี ตัวโต ขนหนานุ่ม [cite: 9]</p>
+                </div>
+            </div>
+            <div class="breed-card">
+                <img src="https://www.purina.co.th/sites/default/files/2025-07/CAT%2520HERO_0026_Sphynx%20%281%29.jpg" class="breed-img" alt="Sphynx">
+                <div class="breed-info">
+                    <h3>แมวสฟิงซ์</h3>
+                    <p>ไร้ขน แต่เปี่ยมด้วยเสน่ห์ ขี้อ้อนสุดๆ [cite: 7]</p>
+                </div>
+            </div>
+            <div class="breed-card">
+                <img src="https://mpics.mgronline.com/pics/Images/556000008771403.JPEG" class="breed-img" alt="British Shorthair">
+                <div class="breed-info">
+                    <h3>บริติช ช็อตแฮร์</h3>
+                    <p>หน้ากลม แก้มป่อง เลี้ยงง่าย [cite: 8]</p>
+                </div>
+            </div>
+            <div class="breed-card">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRX34ROuycPWSzrhVKz5mspgfY7yC9u6-aDBA&s" class="breed-img" alt="Siamese">
+                <div class="breed-info">
+                    <h3>แมวสยาม (วิเชียรมาศ)</h3>
+                    <p>แมวไทยมงคล ฉลาดและช่างพูด [cite: 5]</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="guide" class="container reveal">
+        <h2 class="section-title">คู่มือการเลี้ยงดู</h2>
+        <div class="tabs-container">
+            <div class="tabs-header">
+                <button class="tab-btn active" onclick="openTab('food')">อาหาร (Food)</button>
+                <button class="tab-btn" onclick="openTab('care')">การดูแล (Care)</button>
+                <button class="tab-btn" onclick="openTab('train')">การฝึก (Training)</button>
+            </div>
+
+            <div id="food" class="tab-content active">
+                <div class="content-grid">
+                    <div>
+                        <h3 style="margin-bottom: 20px; color: var(--primary);">โภชนาการที่เหมาะสม</h3>
+                        <ul class="content-list">
+                            <li><i class="fas fa-check-circle"></i> <strong>อาหารเปียก:</strong> มีน้ำเยอะ ช่วยเรื่องไต เหมาะกับแมวกินน้ำน้อย [cite: 18, 19, 20]</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>อาหารแห้ง:</strong> สะดวก เก็บง่าย ช่วยขัดหินปูน [cite: 22, 23, 24]</li>
+                            <li><i class="fas fa-check-circle"></i> <strong>ตามวัย:</strong> ลูกแมวต้องการโปรตีนสูง แมวแก่ต้องการอาหารย่อยง่าย [cite: 26, 29]</li>
+                        </ul>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=500&q=60" style="width:100%; border-radius: 20px;" alt="Cat Eating">
+                </div>
+            </div>
+
+            <div id="care" class="tab-content">
+                <div class="content-grid">
+                    <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=500&q=60" style="width:100%; border-radius: 20px;" alt="Cat Care">
+                    <div>
+                        <h3 style="margin-bottom: 20px; color: var(--primary);">การดูแลพื้นฐาน</h3>
+                        <ul class="content-list">
+                            <li><i class="fas fa-heart"></i> <strong>วัคซีน:</strong> ฉีดตามกำหนดเพื่อป้องกันโรคร้ายแรง [cite: 32]</li>
+                            <li><i class="fas fa-heart"></i> <strong>ความสะอาด:</strong> เปลี่ยนทรายแมวทุกวัน แปรงขนสม่ำเสมอ [cite: 35, 36]</li>
+                            <li><i class="fas fa-heart"></i> <strong>ทำหมัน:</strong> ลดพฤติกรรมก้าวร้าวและป้องกันโรค [cite: 38]</li>
+                            <li><i class="fas fa-heart"></i> <strong>ความปลอดภัย:</strong> ปิดระเบียงป้องกันแมวตกหรือหนีเที่ยว [cite: 49]</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="train" class="tab-content">
+                <div class="content-grid">
+                    <div>
+                        <h3 style="margin-bottom: 20px; color: var(--primary);">เทคนิคการฝึกแมว</h3>
+                        <ul class="content-list">
+                            <li><i class="fas fa-star"></i> ใช้ระบบรางวัล (ขนม/คำชม) เมื่อทำถูก [cite: 64]</li>
+                            <li><i class="fas fa-star"></i> ห้ามลงโทษรุนแรง จะทำให้แมวกลัว [cite: 64]</li>
+                            <li><i class="fas fa-star"></i> ฝึกครั้งละสั้นๆ แต่บ่อยครั้ง [cite: 64]</li>
+                            <li><i class="fas fa-star"></i> เริ่มจากเรื่องง่ายๆ เช่น การใช้กระบะทราย หรือเรียกชื่อ [cite: 64]</li>
+                        </ul>
+                    </div>
+                    <img src="https://images.unsplash.com/photo-1543852786-1cf6624b9987?auto=format&fit=crop&w=500&q=60" style="width:100%; border-radius: 20px;" alt="Cat Training">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="health" class="container reveal">
+        <div class="disease-section">
+            <div class="container">
+                <h2 class="section-title"><i class="fas fa-user-md"></i> โรคที่ต้องระวัง</h2>
+                <div class="disease-grid">
+                    <div class="disease-card">
+                        <h4><i class="fas fa-biohazard"></i> โรคหัดแมว (Distemper)</h4>
+                        <p>โรคติดต่อร้ายแรง อาเจียน ท้องเสีย รุนแรงถึงชีวิต [cite: 53, 54]</p>
+                    </div>
+                    <div class="disease-card">
+                        <h4><i class="fas fa-virus"></i> โรคหวัดแมว (Cat Flu)</h4>
+                        <p>ไอ จาม มีน้ำมูก คล้ายหวัดคน แต่อาจลามลงปอด [cite: 55, 56]</p>
+                    </div>
+                    <div class="disease-card">
+                        <h4><i class="fas fa-shield-virus"></i> เอดส์แมว (FIV)</h4>
+                        <p>ทำลายภูมิคุ้มกัน ติดเชื้อง่าย [cite: 57, 58]</p>
+                    </div>
+                    <div class="disease-card">
+                        <h4><i class="fas fa-exclamation-triangle"></i> พิษสุนัขบ้า (Rabies)</h4>
+                        <p>ติดต่อสู่คนได้ อันตรายถึงชีวิต ต้องฉีดวัคซีนป้องกัน [cite: 61, 62]</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="container reveal">
+        <h2 class="section-title">บริการของเรา</h2>
+        <div class="services-list">
+            <div class="service-item">
+                <i class="fa-solid fa-shield-cat"></i>
+                <h3>รับประกันสุขภาพ</h3>
+                <p>ดูแลต่อเนื่อง 7-14 วัน หลังรับน้องแมวไปดูแล [cite: 67]</p>
+            </div>
+            <div class="service-item">
+                <i class="fa-solid fa-comments"></i>
+                <h3>ปรึกษาฟรีตลอดชีพ</h3>
+                <p>ให้คำแนะนำการเลี้ยง อาหาร และการฝึกเบื้องต้น [cite: 67]</p>
+            </div>
+            <div class="service-item">
+                <i class="fa-solid fa-syringe"></i>
+                <h3>บริการวัคซีน</h3>
+                <p>ครบวงจร พร้อมส่วนลดพิเศษสำหรับลูกค้าเก่า [cite: 67]</p>
+            </div>
+            <div class="service-item">
+                <i class="fa-solid fa-mobile-screen"></i>
+                <h3>อัปเดตออนไลน์</h3>
+                <p>ติดตามข้อมูลการดูแลตามช่วงวัยผ่านระบบออนไลน์ [cite: 68]</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Meow Heaven Premium Shop. All Rights Reserved.</p>
+        <p style="font-size: 0.8rem; margin-top: 10px;">Platform for Cat Lovers by Cat Lovers [cite: 69]</p>
+    </footer>
+
+    <script>
+        // 1. Dark Mode Logic
+        const toggleSwitch = document.querySelector('#themeToggle');
+        
+        function switchTheme(e) {
+            if (e.target.checked) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        }
+        toggleSwitch.addEventListener('change', switchTheme);
+
+        // 2. Tab Switching Logic
+        function openTab(tabName) {
+            var i, tabContent, tabBtn;
+            
+            // Hide all content
+            tabContent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabContent.length; i++) {
+                tabContent[i].style.display = "none";
+                tabContent[i].classList.remove("active");
+            }
+
+            // Remove active class from buttons
+            tabBtn = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tabBtn.length; i++) {
+                tabBtn[i].className = tabBtn[i].className.replace(" active", "");
+            }
+
+            // Show current tab and add active class
+            document.getElementById(tabName).style.display = "block";
+            // Small delay to allow CSS animation to trigger
+            setTimeout(() => {
+                document.getElementById(tabName).classList.add("active");
+            }, 10);
+            event.currentTarget.className += " active";
+        }
+
+        // 3. Scroll Reveal Animation
+        window.addEventListener('scroll', reveal);
+
+        function reveal() {
+            var reveals = document.querySelectorAll('.reveal');
+
+            for (var i = 0; i < reveals.length; i++) {
+                var windowheight = window.innerHeight;
+                var revealtop = reveals[i].getBoundingClientRect().top;
+                var revealpoint = 150;
+
+                if (revealtop < windowheight - revealpoint) {
+                    reveals[i].classList.add('active');
+                }
+            }
+        }
+        
+        // Trigger reveal on load
+        reveal();
+    </script>
+</body>
+</html>
